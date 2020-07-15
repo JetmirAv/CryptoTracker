@@ -7,3 +7,15 @@
 //
 
 import Foundation
+import UIKit
+
+struct Country {
+    // ...
+}
+
+class CountryTableViewCell: UITableViewCell {
+}
+
+class CountriesTableViewController: UITableViewController {
+    // ...
+}
