@@ -17,6 +17,8 @@ class CurrencyTableViewCell: UITableViewCell {
 class CurrencyListTableViewController: UITableViewController {
 
     var currencies: [Currency] = [];
+    var db: DBHelper = DBHelper()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,6 +60,15 @@ class CurrencyListTableViewController: UITableViewController {
         return cell
     }
     
+//    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//        print("Clicked!")
+//
+//        let controller = DetailViewController(currency: self.currencies[indexPath.row])
+//
+//        self.navigationController?.pushViewController(controller, animated: true)
+//    }
+    
     
     // MARK: Async Task
     
@@ -91,14 +102,25 @@ class CurrencyListTableViewController: UITableViewController {
                 let decoder = JSONDecoder()
 
                 do {
-                    
-                    print("Ishalla edhe knej")
-                    
                     let currencies = try decoder.decode([Currency].self, from: data)
                     
-                    print("Knej mrijtem")
-                    print(currencies[0])
-                    self.currencies = currencies;
+//                    self.currencies = currencies.filter {
+//                        currency in
+//
+//
+//
+//                        return currency.price_usd != nil && currency.type_is_crypto == 1
+//                    };
+                    
+                    for currency in currencies {
+                        
+                        if(currency.price_usd != nil && currency.type_is_crypto == 1 && currency.name != nil && currency.asset_id != nil){
+                            self.db.insert(name: currency.name!, asset_id: currency.asset_id!, type_is_crypto: currency.type_is_crypto!, price_usd: currency.price_usd!)
+                        }
+                        
+                    }
+                    
+                    self.currencies = self.db.read();
                     
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
@@ -155,11 +177,19 @@ class CurrencyListTableViewController: UITableViewController {
     /*
     // MARK: - Navigation
 
+     */
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
+
+        if segue.identifier == "showDetailView" {
+            if let indexPath = self.tableView.indexPathForSelectedRow {
+                let controller = segue.destination as! DetailViewController
+                controller.currency = currencies[indexPath.row]
+            }
+        }
     }
-    */
+
 
 }
